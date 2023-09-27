@@ -1,0 +1,16 @@
+body {
+    width: 100%;
+    background-color: #F1FDF3;
+    font-family: Arial;
+    color: #101010;
+}
+
+.uploadOuter {
+    text-align: center;
+    padding: 20px;
+}
+
+#preview {
+    text-align: center;
+    max-width: 100%
+}

@@ -1,0 +1,31 @@
+<%- include('parts/head') %>
+    <%- include('parts/nav') %>
+        <form action="http://localhost:3000/formsub" method="post" enctype="multipart/form-data">
+            <div class="row justify-content-center">
+                <div class="col-3 bg-info">
+                    <fieldset>
+                        <legend>Please select your action :</legend>
+                        <div>
+                            <input type="radio" id="contactChoice1" name="mod" value="rembg" />
+                            <label for="contactChoice1">rembg</label>
+
+                            <input type="radio" id="contactChoice2" name="mod" value="scail" />
+                            <label for="contactChoice2">scail</label>
+                        </div>
+                    </fieldset>
+                    <input type="submit">
+                </div>
+                <div class="col-7 bg-dark">
+                    <div class="uploadOuter">
+                        <label for="uploadFile" class="btn btn-primary">upload img</label>
+                        <input name="imgsrc" type="file" id="uploadFile" class="btn btn-primary" hidden>
+                    </div>
+                    <div>
+                        <img id="preview" name src="" alt="">
+                    </div>
+                </div>
+            </div>
+
+
+        </form>
+        <%- include('parts/footer') %>
