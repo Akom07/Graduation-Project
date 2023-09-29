@@ -5,6 +5,7 @@ const fs = require('fs');
 const axios = require('axios');
 const multer = require('multer')
 let { PythonShell } = require('python-shell')
+const { spawn } = require('child_process');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -38,20 +39,17 @@ app.post('/formsub', upload.single('imgsrc'), (req, res) => {
     pyreq(mod)
     res.render('formsub.ejs')
 })
-////////////////////////////////////
+///////////////////////////////////
 
 
-
-
-
-////////////////////////////////////
-work
+///////////////////////////////////
+// work
 const pyreq = (mod) => {
     let options = {
         args: [mod]
     }
     setTimeout(() => {
-        PythonShell.run('rembg-main/inp.py', options).then((results) => {
+        PythonShell.run('inp.py', options).then((results) => {
             // results is an array consisting of messages collected during execution
             return console.log(...results);
         });

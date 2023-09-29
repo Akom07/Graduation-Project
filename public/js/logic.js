@@ -4,4 +4,3 @@ upload.onchange = function () {
     preview.src = URL.createObjectURL(upload.files[0])
 }
 
-
