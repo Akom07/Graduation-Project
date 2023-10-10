@@ -8,14 +8,14 @@ let { PythonShell } = require('python-shell')
 const { spawn } = require('child_process');
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'C:/Users/Akom/Desktop/gp/public/bgres/')
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
     },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname = 'inpg.jpg')
-    }
-
-})
+    filename: function (req, file, cb) {
+        const extension = path.extname(file.originalname);
+        cb(null, file.fieldname + '-' + Date.now() + extension);
+    },
+});
 
 const upload = multer({ storage })
 
