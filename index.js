@@ -1,15 +1,12 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const fs = require('fs');
-const axios = require('axios');
 const multer = require('multer')
-let { PythonShell } = require('python-shell')
-const { spawn } = require('child_process');
+const cp = require('child_process');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/');
+        cb(null, 'public/uploads/');
     },
     filename: function (req, file, cb) {
         const extension = path.extname(file.originalname);
@@ -31,33 +28,40 @@ app.get('/', (req, res) => {
     res.render('home.ejs')
 })
 app.get('/formsub', (req, res) => {
+    imageUrl = ""
     res.render('formsub.ejs')
 })
-////////
-app.post('/formsub', upload.single('imgsrc'), (req, res) => {
-    const { mod } = req.body
-    pyreq(mod)
-    res.render('formsub.ejs')
-})
-///////////////////////////////////
 
 
-///////////////////////////////////
-// work
-const pyreq = (mod) => {
-    let options = {
-        args: [mod]
-    }
-    setTimeout(() => {
-        PythonShell.run('inp.py', options).then((results) => {
-            // results is an array consisting of messages collected during execution
-            return console.log(...results);
+app.post('/formsub', upload.single('image'), async (req, res) => {
+    const imagePath = req.file.path;
+    const command = `rembg i ${imagePath} public/uploads/done.png`;
+
+    new Promise((resolve, reject) => {
+        cp.exec(command, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Error occurred: ${error.message}`);
+                reject('Error occurred during image processing');
+            }
+            if (stderr) {
+                console.error(`stderr: ${stderr}`);
+                reject('Error occurred during image processing');
+            }
+            resolve();
         });
-    }, 3000)
-}
-
-
-
+    })
+        .then(() => {
+            // Wait for 1 second for the file to completely write to the disk
+            setTimeout(() => {
+                const generatedImagePath = 'uploads/done.png';
+                const imageUrl = `http://localhost:3000/${generatedImagePath}`;
+                res.render('formsub.ejs', { imageUrl });
+            }, 1000);
+        })
+        .catch((error) => {
+            res.status(500).send(error);
+        });
+});
 
 
 app.listen(3000, () => {
