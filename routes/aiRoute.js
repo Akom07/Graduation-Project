@@ -3,7 +3,7 @@ const router = express.Router()
 const multer = require('multer')
 const path = require('path');
 const cp = require('child_process');
-
+const fs = require('fs');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -18,7 +18,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage })
 
 
-
 router.get('/', (req, res) => {
     imageUrl = ""
     res.render('formsub.ejs')
@@ -27,8 +26,9 @@ router.get('/', (req, res) => {
 
 router.post('/', upload.single('image'), async (req, res) => {
     const imagePath = req.file.path;
-    const command = `rembg i ${imagePath} public/uploads/done.png`;
-
+    const newFilename = 'done-' + Date.now() + '.png';
+    const outputPath = path.join('public/uploads/', newFilename);
+    const command = `rembg i ${imagePath} ${outputPath}`;
 
     new Promise((resolve, reject) => {
         cp.exec(command, (error, stdout, stderr) => {
@@ -44,13 +44,19 @@ router.post('/', upload.single('image'), async (req, res) => {
         });
     })
         .then(() => {
-            // Wait for 1 second for the file to completely write to the disk
-            setTimeout(() => {
-                const generatedImagePath = 'uploads/done.png';
-                const imageUrl = `http://localhost:3000/${generatedImagePath}`;
-                res.render('./formsub.ejs', { imageUrl });
+            const imageUrl = `http://localhost:3000/uploads/${newFilename}`;
+            res.json({ imageUrl });
 
-            }, 1000);
+            // Delete input and processed images after sending the response
+            setTimeout(() => {
+                fs.unlink(imagePath, (err) => {
+                    if (err) console.error(`Failed to delete input image: ${err}`);
+                });
+
+                fs.unlink(outputPath, (err) => {
+                    if (err) console.error(`Failed to delete processed image: ${err}`);
+                });
+            }, 5000); // Delay as needed
         })
         .catch((error) => {
             res.status(500).send(error);
