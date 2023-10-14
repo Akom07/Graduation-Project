@@ -5,6 +5,8 @@ const path = require('path');
 
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'manualEditor')));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -17,6 +19,12 @@ app.use('/', homeRoute)
 
 const aiRoute = require('./routes/aiRoute')
 app.use('/formsub', aiRoute)
+
+const maniualRoute = require('./routes/maniualRoute')
+app.use('/maniual', maniualRoute)
+
+// const aboutUsRoute = require('./routes/aboutUsRoute')
+// app.use('/', aboutUsRoute)
 
 
 
