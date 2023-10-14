@@ -12,8 +12,8 @@ form.addEventListener('submit', function (event) {
     event.preventDefault();
 
     // Show the loader
-    const loader = document.getElementById('loader');
-    loader.style.display = 'block';
+    const overlay = document.querySelector('.overlay');
+    overlay.style.display = 'flex';
 
     // Create a FormData object
     let formData = new FormData();
@@ -36,12 +36,12 @@ form.addEventListener('submit', function (event) {
         })
         .then(function (response) {
             // Hide the loader
-            loader.style.display = 'none';
+            overlay.style.display = 'none';
             preview.src = response.data.imageUrl;
         })
         .catch(function (error) {
             // If there's an error, log it and hide the loader
             console.error(error);
-            loader.style.display = 'none';
+            overlay.style.display = 'none';
         });
 });
