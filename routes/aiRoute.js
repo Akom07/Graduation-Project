@@ -1,9 +1,10 @@
 const express = require('express');
-const router = express.Router()
-const multer = require('multer')
+const router = express.Router();
+const multer = require('multer');
 const path = require('path');
 const cp = require('child_process');
 const fs = require('fs');
+const async = require('async');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -20,53 +21,29 @@ let upload = multer({
     limits: { fileSize: 10000000 }
 }).single('image');
 
-
-
-router.get('/', (req, res) => {
-    imageUrl = ""
-    res.render('formsub.ejs')
-})
-
-
-router.post('/', (req, res) => {
-
-    upload(req, res, (err) => {
+let uploadQueue = async.queue((task, done) => {
+    upload(task.req, task.res, (err) => {
         if (err) {
-            res.status(500).send(err);
-        }
-        else {
-            const imagePath = req.file.path;
+            task.res.status(500).send(err);
+        } else {
+            const imagePath = task.req.file.path;
             const newFilename = 'done-' + Date.now() + '.png';
             const outputPath = path.join('public/uploads/', newFilename);
-            // const command = `rembg i ${imagePath} ${outputPath}`
 
-            const mod = req.body.mod;
-            // Initialize the command
             let command;
-
-            // Switch the command depending on the `mod` value
-            switch (mod) {
+            switch (task.req.body.mod) {
                 case 'rembg':
                     command = `rembg i ${imagePath} ${outputPath}`;
                     break;
                 case 'upscale':
                     command = `RembgMod2 ${imagePath} ${outputPath}`;
                     break;
-                // default:
-                //     command = `rembg i ${imagePath} ${outputPath}`;
             }
-
-
-
 
             new Promise((resolve, reject) => {
                 cp.exec(command, (error, stdout, stderr) => {
-                    if (error) {
-                        console.error(`Error occurred: ${error.message}`);
-                        reject('Error occurred during image processing');
-                    }
-                    if (stderr) {
-                        console.error(`stderr: ${stderr}`);
+                    if (error || stderr) {
+                        console.error(`Error occurred: ${error?.message || stderr}`);
                         reject('Error occurred during image processing');
                     }
                     resolve();
@@ -74,9 +51,8 @@ router.post('/', (req, res) => {
             })
                 .then(() => {
                     const imageUrl = `http://localhost:3000/uploads/${newFilename}`;
-                    res.json({ imageUrl });
+                    task.res.json({ imageUrl });
 
-                    // Delete input and processed images after sending the response
                     setTimeout(() => {
                         fs.unlink(imagePath, (err) => {
                             if (err) console.error(`Failed to delete input image: ${err}`);
@@ -85,12 +61,24 @@ router.post('/', (req, res) => {
                         fs.unlink(outputPath, (err) => {
                             if (err) console.error(`Failed to delete processed image: ${err}`);
                         });
-                    }, 5000); // Delay as needed
+                    }, 5000);
+
+                    done();
                 })
                 .catch((error) => {
-                    res.status(500).send(error);
+                    task.res.status(500).send(error);
                 });
         }
     });
+}, 1);  // concurrency level is set to 1
+
+router.get('/', (req, res) => {
+    imageUrl = ""
+    res.render('formsub.ejs')
+})
+
+router.post('/', (req, res) => {
+    uploadQueue.push({ req, res });
 });
-module.exports = router
+
+module.exports = router;

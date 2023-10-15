@@ -3,6 +3,16 @@ const preview = document.querySelector('#preview');
 upload.onchange = function () {
     preview.src = URL.createObjectURL(upload.files[0]);
 };
+window.addEventListener('load', function () {
+    document.getElementById('downloadButton').addEventListener('click', function (e) {
+        e.preventDefault();
+        let imageUrl = document.getElementById('preview').src;
+        let downloadLink = document.getElementById('downloadLink');
+        downloadLink.href = imageUrl;
+        downloadLink.download = 'SmartPic';
+        downloadLink.click();
+    });
+});
 
 // Select the form element
 const form = document.querySelector('form');
