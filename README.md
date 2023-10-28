@@ -1,1 +1,1 @@
-creat a empty folder in public name it [upload]
+create a empty folder in public name it [upload]
