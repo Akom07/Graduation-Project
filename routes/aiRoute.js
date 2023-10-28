@@ -35,8 +35,8 @@ let uploadQueue = async.queue((task, done) => {
                 case 'rembg':
                     command = `rembg i ${imagePath} ${outputPath}`;
                     break;
-                case 'upscale':
-                    command = `RembgMod2 ${imagePath} ${outputPath}`;
+                case 'scale':
+                    command = `realesrgan/realesrgan-ncnn-vulkan.exe -i ${imagePath} -o ${outputPath} -g0`;
                     break;
             }
 

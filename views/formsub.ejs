@@ -3,13 +3,13 @@
 
         <form action="/formsub" method="post" enctype="multipart/form-data">
             <div class="row justify-content-center g-0 flex-md-row-reverse">
-                <div class="col-md-7 bg-dark">
+                <div class="col-md-7 bg-dark ">
                     <div>
                         <img id="preview" src="<%= imageUrl %>" alt="">
                     </div>
                 </div>
-                <div class="col-md-3 row justify-content-center bg-info">
-                    <fieldset class="col-12">
+                <div class="col-md-3 row justify-content-around bg-dark g-0">
+                    <fieldset class="col-11">
                         <legend>Please select your action :</legend>
                         <label class="radio-button">
                             <input type="radio" id="contactChoice1" name="mod" value="rembg" checked />
@@ -22,14 +22,16 @@
                             Image Enhancement
                         </label>
                     </fieldset>
-                    <div class="uploadOuter">
-                        <label for="uploadFile" class="btn btn-primary">upload img</label>
+                    <div class="uploadOuter col-12 row justify-content-around">
+                        <label for="uploadFile" class="btn btn-primary col-5">Upload Image</label>
                         <input name="image" type="file" id="uploadFile" class="btn btn-primary" hidden>
 
                         <a href="#" id="downloadLink" download hidden></a>
-                        <button id="downloadButton" role="button" class="btn btn-primary">Download Image</button>
+                        <button id="downloadButton" role="button" class="btn btn-primary col-5">Save Image</button>
                     </div>
-                    <input class="btn btn-primary" type="submit">
+
+                    <input class="btn btn-primary col-11" type="submit">
+
                 </div>
             </div>
         </form>

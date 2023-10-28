@@ -23,8 +23,8 @@ app.use('/formsub', aiRoute)
 const maniualRoute = require('./routes/maniualRoute')
 app.use('/maniual', maniualRoute)
 
-// const aboutUsRoute = require('./routes/aboutUsRoute')
-// app.use('/', aboutUsRoute)
+const aboutUsRoute = require('./routes/aboutUsRoute')
+app.use('/', aboutUsRoute)
 
 
 
