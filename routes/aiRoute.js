@@ -16,10 +16,18 @@ const storage = multer.diskStorage({
     },
 });
 
+
+
 let upload = multer({
     storage: storage,
     limits: { fileSize: 10000000 }
 }).single('image');
+
+
+let realesrganDirectory = path.resolve(__dirname, '..', 'public', 'realesrgan');
+let realesrganExec = path.join(realesrganDirectory, 'realesrgan-ncnn-vulkan');
+
+
 
 let uploadQueue = async.queue((task, done) => {
     upload(task.req, task.res, (err) => {
@@ -36,7 +44,7 @@ let uploadQueue = async.queue((task, done) => {
                     command = `rembg i ${imagePath} ${outputPath}`;
                     break;
                 case 'scale':
-                    command = `realesrgan/realesrgan-ncnn-vulkan.exe -i ${imagePath} -o ${outputPath} -g0`;
+                    command = `${realesrganExec} -i ${path.normalize(imagePath)} -o ${path.normalize(outputPath)}`;
                     break;
             }
 
